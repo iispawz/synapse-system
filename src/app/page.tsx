@@ -1,22 +1,52 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-8 md:p-24">
-      <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-        Synapse System
-      </h1>
-      <p className="text-muted-foreground text-center max-w-md">
-        shadcn/ui configurado com tokens de design premium.
-        Fundo escuro, acento terroso e componentes acessíveis.
-      </p>
-      <div className="flex flex-wrap items-center justify-center gap-4">
-        <Button>Primário</Button>
-        <Button variant="secondary">Secundário</Button>
-        <Button variant="outline">Outline</Button>
-        <Button variant="destructive">Destrutivo</Button>
-        <Button variant="ghost">Ghost</Button>
-      </div>
-    </main>
+    <div className="min-h-screen bg-background">
+      {/* Navbar Pública */}
+      <nav className="border-b border-border">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-primary" />
+            <span className="text-xl font-semibold text-foreground">
+              Synapse System
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <Link href="/login">
+              <Button variant="ghost">Entrar</Button>
+            </Link>
+            <Link href="/signup">
+              <Button>Começar Agora</Button>
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <main className="mx-auto max-w-7xl px-6 py-24">
+        <div className="text-center">
+          <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-6xl">
+            Raciocínio clínico estruturado
+            <span className="text-primary"> para terapeutas MPC</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+            Do sintoma à evolução: uma plataforma que pensa junto com você.
+            Estruture seu raciocínio terapêutico com o método Procure Cicatrizes.
+          </p>
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <Link href="/signup">
+              <Button size="lg" className="px-8">
+                Teste Grátis por 14 Dias
+              </Button>
+            </Link>
+            <Button variant="outline" size="lg">
+              Ver Demonstração
+            </Button>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }
