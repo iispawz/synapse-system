@@ -1,19 +1,79 @@
 @import "tailwindcss";
 
-:root {
-  --background: 222 47% 6%;
-  --foreground: 0 0% 98%;
-  --card: 222 41% 10%;
-  --card-foreground: 0 0% 98%;
-  --primary: 36 38% 61%;
-  --primary-foreground: 222 47% 6%;
-  --muted: 222 15% 34%;
-  --border: 217 9% 21%;
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 0 0% 98%;
+    
+    --card: 222 41% 10%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 222 41% 10%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 36 38% 61%;
+    --primary-foreground: 222 47% 6%;
+    
+    --secondary: 217 9% 21%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 222 15% 34%;
+    --muted-foreground: 215 20% 65%;
+    
+    --accent: 36 38% 61%;
+    --accent-foreground: 222 47% 6%;
+    
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 217 9% 21%;
+    --input: 217 9% 21%;
+    --ring: 36 38% 61%;
+    
+    --radius: 0.75rem;
+  }
 }
 
-body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
+@layer base {
+  /* 
+   * Tailwind v4: usar CSS nativo em vez de @apply para vars customizadas
+   * Isso evita erros de "unknown utility class" no build
+   */
+  * {
+    border-color: hsl(var(--border));
+  }
+  
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Scrollbar personalizada para tema escuro */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
+  }
+}
+
+/* Utilitários customizados para o Synapse */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .clip-ellipse {
+    clip-path: ellipse(50% 50% at 50% 50%);
+  }
 }
