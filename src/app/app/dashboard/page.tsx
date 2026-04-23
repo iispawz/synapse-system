@@ -1,6 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Users, 
@@ -8,128 +9,102 @@ import {
   TrendingUp, 
   Clock,
   ArrowUpRight,
-  ArrowDownRight,
-  MoreHorizontal
+  Brain,
+  Activity,
+  CheckCircle2,
+  AlertCircle
 } from "lucide-react";
 import { 
-  LineChart, 
-  Line, 
+  AreaChart, 
+  Area, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer,
-  AreaChart,
-  Area
+  ResponsiveContainer 
 } from "recharts";
 
-// Dados mockados (depois virão do Supabase)
-const activityData = [
-  { name: "Seg", sessoes: 4, pacientes: 2 },
-  { name: "Ter", sessoes: 6, pacientes: 3 },
-  { name: "Qua", sessoes: 3, pacientes: 2 },
-  { name: "Qui", sessoes: 7, pacientes: 4 },
-  { name: "Sex", sessoes: 5, pacientes: 3 },
-  { name: "Sáb", sessoes: 2, pacientes: 1 },
-  { name: "Dom", sessoes: 0, pacientes: 0 },
+// Dados mockados
+const weeklyData = [
+  { day: "Seg", sessions: 4, progress: 65 },
+  { day: "Ter", sessions: 6, progress: 78 },
+  { day: "Qua", sessions: 3, progress: 52 },
+  { day: "Qui", sessions: 7, progress: 85 },
+  { day: "Sex", sessions: 5, progress: 72 },
+  { day: "Sáb", sessions: 2, progress: 45 },
+  { day: "Dom", sessions: 0, progress: 0 },
 ];
 
-const recentPatients = [
-  { name: "Ana Silva", lastSession: "Hoje, 14:00", status: "active", progress: 75 },
-  { name: "Carlos Oliveira", lastSession: "Ontem, 10:30", status: "active", progress: 60 },
-  { name: "Maria Santos", lastSession: "2 dias atrás", status: "paused", progress: 45 },
-  { name: "João Pereira", lastSession: "3 dias atrás", status: "active", progress: 80 },
-];
-
-const upcomingSessions = [
-  { patient: "Ana Silva", time: "14:00", type: "Individual", status: "confirmed" },
-  { patient: "Carlos Oliveira", time: "16:30", type: "Casal", status: "confirmed" },
-  { patient: "Maria Santos", time: "Amanhã, 09:00", type: "Individual", status: "pending" },
+const recentActivity = [
+  { patient: "Ana Silva", time: "14:00", type: "Sessão Individual", status: "Em andamento", statusType: "active" },
+  { patient: "Carlos Oliveira", time: "16:30", type: "Terapia de Casal", status: "Confirmado", statusType: "confirmed" },
+  { patient: "Maria Santos", time: "Amanhã, 09:00", type: "Acompanhamento", status: "Pendente", statusType: "pending" },
 ];
 
 const stats = [
-  {
-    title: "Pacientes Ativos",
-    value: "42",
-    change: "+12%",
-    trend: "up",
-    icon: Users,
-    description: "vs mês anterior",
-  },
-  {
-    title: "Sessões Hoje",
-    value: "5",
-    change: "+2",
-    trend: "up",
-    icon: Calendar,
-    description: "das 8h às 18h",
-  },
-  {
-    title: "Taxa de Evolução",
-    value: "78%",
-    change: "+5%",
-    trend: "up",
-    icon: TrendingUp,
-    description: "média dos pacientes",
-  },
-  {
-    title: "Horas Atendidas",
-    value: "124",
-    change: "-3%",
-    trend: "down",
-    icon: Clock,
-    description: "este mês",
-  },
+  { title: "Pacientes Ativos", value: "42", change: "+12%", trend: "up", icon: Users, color: "bg-[#E7DBC7]", iconColor: "text-[#8B6F5A]" },
+  { title: "Sessões Hoje", value: "5", change: "+2", trend: "up", icon: Calendar, color: "bg-[#E8F0E9]", iconColor: "text-[#6F7C6D]" },
+  { title: "Taxa de Evolução", value: "78%", change: "+5%", trend: "up", icon: TrendingUp, color: "bg-[#F5EBE0]", iconColor: "text-[#C77F49]" },
+  { title: "Tempo Médio", value: "45min", change: "-3%", trend: "down", icon: Clock, color: "bg-[#F2EFEA]", iconColor: "text-[#6B6359]" },
+];
+
+const clinicalInsights = [
+  { title: "Padrão Identificado", description: "Pacientes com gatilhos noturnos respondem melhor a intervenções matinais.", icon: Brain, color: "text-[#C77F49]" },
+  { title: "Recomendação", description: "Considere revisar o plano terapêutico de 3 casos com progresso estagnado.", icon: AlertCircle, color: "text-[#6F7C6D]" }
+];
+
+const motivationalMessages = [
+  "Organização que sustenta sua missão.",
+  "Que sua prática seja leve e clara hoje.",
+  "Prepare-se para acolher quem precisa de você.",
+  "Seu espaço clínico está pronto para o dia.",
+  "Respire fundo, você está fazendo um ótimo trabalho."
 ];
 
 export default function DashboardPage() {
+  const [greeting, setGreeting] = useState("Olá");
+  const [dailyMessage, setDailyMessage] = useState("");
+  const userName = "Dra. Clara";
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) setGreeting("Bom dia");
+    else if (hour >= 12 && hour < 18) setGreeting("Boa tarde");
+    else setGreeting("Boa noite");
+
+    const randomMsg = motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+    setDailyMessage(randomMsg);
+  }, []);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Bem-vindo de volta! Aqui está o resumo da sua prática clínica.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-primary border-primary">
-            Plano Pro
-          </Badge>
-        </div>
+      <div className="flex flex-col space-y-1">
+        <h1 className="text-3xl lg:text-4xl font-semibold tracking-tight text-[#2B2420]">
+          {greeting}, {userName}!
+        </h1>
+        <p className="text-[#6B6359] text-sm font-medium italic">
+          "{dailyMessage}"
+        </p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon;
-          const isPositive = stat.trend === "up";
-          
           return (
-            <Card key={stat.title} className="border-border bg-card">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.title}
-                </CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                <div className="flex items-center gap-1 mt-1">
-                  {isPositive ? (
-                    <ArrowUpRight className="h-3 w-3 text-green-500" />
-                  ) : (
-                    <ArrowDownRight className="h-3 w-3 text-red-500" />
-                  )}
-                  <span className={`text-xs ${isPositive ? "text-green-500" : "text-red-500"}`}>
+            <Card key={stat.title} className="bg-white border-none shadow-sm hover:shadow-lg hover-lift transition-all duration-300 rounded-2xl">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <div className={`p-3 rounded-xl ${stat.color}`}><Icon className={`h-5 w-5 ${stat.iconColor}`} /></div>
+                  <div className={`flex items-center gap-1 text-xs font-medium ${stat.trend === "up" ? "text-[#6F7C6D]" : "text-red-500"}`}>
+                    {stat.trend === "up" ? <ArrowUpRight className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3 rotate-180" />}
                     {stat.change}
-                  </span>
-                  <span className="text-xs text-muted-foreground ml-1">
-                    {stat.description}
-                  </span>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-semibold tracking-tight text-[#2B2420]">{stat.value}</p>
+                  <p className="text-xs text-[#6B6359] font-medium uppercase tracking-wide">{stat.title}</p>
                 </div>
               </CardContent>
             </Card>
@@ -137,101 +112,102 @@ export default function DashboardPage() {
         })}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        {/* Activity Chart */}
-        <Card className="col-span-4 border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-foreground">Atividade da Semana</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Sessões realizadas e pacientes atendidos
-            </CardDescription>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Chart Section */}
+        <Card className="lg:col-span-2 bg-white border-none shadow-sm rounded-2xl">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold tracking-tight text-[#2B2420]">Atividade da Semana</h3>
+                <p className="text-xs text-[#6B6359] mt-1">Sessões realizadas e progresso dos pacientes</p>
+              </div>
+              <Badge variant="outline" className="text-xs border-[#E7DBC7] text-[#6B6359] font-medium">24h</Badge>
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+          <CardContent className="pt-4">
+            <div className="h-70">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={activityData}>
+                <AreaChart data={weeklyData}>
                   <defs>
-                    <linearGradient id="colorSessoes" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#C4A57B" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#C4A57B" stopOpacity={0}/>
+                    <linearGradient id="colorSessions" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#C77F49" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#C77F49" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#343A40" />
-                  <XAxis 
-                    dataKey="name" 
-                    stroke="#6C757D" 
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis 
-                    stroke="#6C757D" 
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "#1A1D23", 
-                      border: "1px solid #343A40",
-                      borderRadius: "8px"
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="sessoes" 
-                    stroke="#C4A57B" 
-                    strokeWidth={2}
-                    fillOpacity={1} 
-                    fill="url(#colorSessoes)" 
-                  />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E7DBC7" />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: '#8B6F5A', fontSize: 12 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#8B6F5A', fontSize: 12 }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#FFFFFF', border: '1px solid #E7DBC7', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', fontFamily: 'var(--font-dm-sans)', fontSize: '12px' }} />
+                  <Area type="monotone" dataKey="sessions" stroke="#C77F49" strokeWidth={3} fill="url(#colorSessions)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
 
-        {/* Recent Patients */}
-        <Card className="col-span-3 border-border bg-card">
-          <CardHeader>
-            <CardTitle className="text-foreground">Pacientes Recentes</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Últimos atendimentos realizados
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentPatients.map((patient) => (
-                <div 
-                  key={patient.name} 
-                  className="flex items-center justify-between p-3 rounded-lg bg-secondary/50 hover:bg-secondary transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                      <span className="text-sm font-semibold text-primary">
-                        {patient.name.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{patient.name}</p>
-                      <p className="text-xs text-muted-foreground">{patient.lastSession}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-16">
-                      <div className="h-1.5 bg-border rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-primary rounded-full"
-                          style={{ width: `${patient.progress}%` }}
-                        />
+        {/* Clinical Insights */}
+        <Card className="bg-linear-to-br from-[#2B2420] to-[#1A1A1A] text-white border-none shadow-lg rounded-2xl overflow-hidden">
+          <CardContent className="p-6 relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[#C77F49] opacity-10 rounded-full blur-3xl -mr-10 -mt-10" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-4">
+                <Brain className="h-5 w-5 text-[#C77F49]" />
+                <span className="text-xs font-medium text-[#C77F49] uppercase tracking-wider">Clinical Engine</span>
+              </div>
+              <h3 className="text-xl font-semibold tracking-tight mb-2">Insights Clínicos</h3>
+              <p className="text-gray-400 text-sm mb-6">Análises baseadas no seu método MPC.</p>
+              <div className="space-y-4 mb-6">
+                {clinicalInsights.map((insight, index) => {
+                  const Icon = insight.icon;
+                  return (
+                    <div key={index} className="p-4 bg-white/5 rounded-xl backdrop-blur border border-white/10 hover:bg-white/10 transition-colors">
+                      <div className="flex items-start gap-3">
+                        <Icon className={`h-5 w-5 mt-0.5 ${insight.color}`} />
+                        <div>
+                          <p className="text-sm font-semibold text-white">{insight.title}</p>
+                          <p className="text-xs text-gray-400 mt-1">{insight.description}</p>
+                        </div>
                       </div>
                     </div>
-                    <Badge 
-                      variant={patient.status === "active" ? "default" : "secondary"}
-                      className="text-xs"
-                    >
-                      {patient.status === "active" ? "Ativo" : "Pausado"}
+                  );
+                })}
+              </div>
+              <button className="w-full py-3 bg-[#C77F49] hover:bg-[#C77F49]/90 rounded-xl text-sm font-semibold transition-colors icon-hover">Ver Análise Completa</button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Activity + Quick Actions */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2 bg-white border-none shadow-sm rounded-2xl">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold tracking-tight text-[#2B2420]">Próximas Sessões</h3>
+                <p className="text-xs text-[#6B6359] mt-1">Agenda dos próximos dias</p>
+              </div>
+              <button className="text-sm text-[#C77F49] font-semibold hover:underline">Ver agenda completa</button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <div className="space-y-2">
+              {recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-4 rounded-xl hover:bg-[#F5F3EF] transition-colors group cursor-pointer">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#F5F3EF] group-hover:bg-[#E7DBC7] transition-colors">
+                      <Calendar className="h-5 w-5 text-[#C77F49]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-[#2B2420]">{activity.patient}</p>
+                      <p className="text-xs text-[#6B6359]">{activity.type}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-semibold text-[#8B6F5A] w-24 text-right">{activity.time}</span>
+                    <Badge variant={activity.statusType === "active" ? "default" : "outline"} className={`${activity.statusType === "active" ? "bg-[#6F7C6D] text-white" : activity.statusType === "confirmed" ? "bg-[#E8F0E9] text-[#6F7C6D] border-[#6F7C6D]" : "bg-[#F5EBE0] text-[#C77F49] border-[#C77F49]"} font-medium`}>
+                      {activity.status}
                     </Badge>
                   </div>
                 </div>
@@ -239,58 +215,39 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Upcoming Sessions */}
-      <Card className="border-border bg-card">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-foreground">Próximas Sessões</CardTitle>
-              <CardDescription className="text-muted-foreground">
-                Agenda dos próximos dias
-              </CardDescription>
-            </div>
-            <button className="text-sm text-primary hover:underline">
-              Ver agenda completa
-            </button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {upcomingSessions.map((session, index) => (
-              <div 
-                key={index}
-                className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-primary/50 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center">
-                    <Calendar className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-foreground">{session.patient}</p>
-                    <p className="text-xs text-muted-foreground">{session.type}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-foreground">{session.time}</p>
-                    <Badge 
-                      variant={session.status === "confirmed" ? "default" : "outline"}
-                      className="text-xs"
-                    >
-                      {session.status === "confirmed" ? "Confirmada" : "Pendente"}
-                    </Badge>
-                  </div>
-                  <button className="p-2 hover:bg-secondary rounded-lg transition-colors">
-                    <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                  </button>
-                </div>
+        <Card className="bg-white border-none shadow-sm rounded-2xl">
+          <CardHeader className="pb-2">
+            <h3 className="text-lg font-semibold tracking-tight text-[#2B2420]">Foco de Hoje</h3>
+          </CardHeader>
+          <CardContent className="pt-4 space-y-3">
+            <button className="w-full flex items-center gap-3 p-4 rounded-xl bg-[#F5F3EF] hover:bg-[#E7DBC7] transition-colors text-left group">
+              <div className="p-2 bg-[#C77F49] rounded-lg"><CheckCircle2 className="h-4 w-4 text-white" /></div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-[#2B2420]">Revisar casos pendentes</p>
+                <p className="text-xs text-[#6B6359] mt-0.5">3 casos aguardam atualização</p>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              <ArrowUpRight className="h-4 w-4 text-[#8B6F5A] group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button className="w-full flex items-center gap-3 p-4 rounded-xl bg-[#F5F3EF] hover:bg-[#E7DBC7] transition-colors text-left group">
+              <div className="p-2 bg-[#6F7C6D] rounded-lg"><Activity className="h-4 w-4 text-white" /></div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-[#2B2420]">Registrar evolução</p>
+                <p className="text-xs text-[#6B6359] mt-0.5">2 sessões de ontem</p>
+              </div>
+              <ArrowUpRight className="h-4 w-4 text-[#8B6F5A] group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button className="w-full flex items-center gap-3 p-4 rounded-xl bg-[#F5F3EF] hover:bg-[#E7DBC7] transition-colors text-left group">
+              <div className="p-2 bg-[#8B6F5A] rounded-lg"><Users className="h-4 w-4 text-white" /></div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-[#2B2420]">Novo paciente</p>
+                <p className="text-xs text-[#6B6359] mt-0.5">Iniciar fluxo de intake</p>
+              </div>
+              <ArrowUpRight className="h-4 w-4 text-[#8B6F5A] group-hover:translate-x-1 transition-transform" />
+            </button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

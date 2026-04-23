@@ -2,43 +2,30 @@
 
 @layer base {
   :root {
-    --background: 222 47% 6%;
-    --foreground: 0 0% 98%;
-    
-    --card: 222 41% 10%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 222 41% 10%;
-    --popover-foreground: 0 0% 98%;
-    
-    --primary: 36 38% 61%;
-    --primary-foreground: 222 47% 6%;
-    
-    --secondary: 217 9% 21%;
-    --secondary-foreground: 0 0% 98%;
-    
-    --muted: 222 15% 34%;
-    --muted-foreground: 215 20% 65%;
-    
-    --accent: 36 38% 61%;
-    --accent-foreground: 222 47% 6%;
-    
+    --background: 60 13% 96%;     /* #F5F3EF */
+    --foreground: 26 12% 15%;     /* #2B2420 */
+    --card: 0 0% 100%;            /* #FFFFFF */
+    --card-foreground: 26 12% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 26 12% 15%;
+    --primary: 26 49% 54%;        /* #C77F49 - Terracotta */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 141 6% 46%;      /* #6F7C6D - Verde Sálvia */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 60 8% 85%;           /* #DAD8D4 */
+    --muted-foreground: 26 6% 40%;
+    --accent: 26 21% 45%;         /* #8B6F5A */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 98%;
-    
-    --border: 217 9% 21%;
-    --input: 217 9% 21%;
-    --ring: 36 38% 61%;
-    
-    --radius: 0.75rem;
+    --destructive-foreground: 0 0% 100%;
+    --border: 60 8% 85%;          /* #E7DBC7 */
+    --input: 60 8% 85%;
+    --ring: 26 49% 54%;
+    --radius: 1rem;
   }
 }
 
 @layer base {
-  /* 
-   * Tailwind v4: usar CSS nativo em vez de @apply para vars customizadas
-   * Isso evita erros de "unknown utility class" no build
-   */
   * {
     border-color: hsl(var(--border));
   }
@@ -46,21 +33,35 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Scrollbar personalizada para tema escuro */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  
+  /* Layout Global Fix */
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  #root, #__next {
+    height: 100%;
+  }
+  
   ::-webkit-scrollbar {
     width: 8px;
-    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: hsl(var(--background));
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted));
+    background: hsl(26 21% 65%);
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
@@ -68,12 +69,63 @@
   }
 }
 
-/* Utilitários customizados para o Synapse */
+/* Micro-interactions */
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .hover-lift {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .clip-ellipse {
-    clip-path: ellipse(50% 50% at 50% 50%);
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
   }
+  
+  .icon-hover {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .icon-hover:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+  
+  .icon-hover:active {
+    transform: scale(0.98);
+  }
+}
+
+/* --- Lenis & Scroll Premium Fix --- */
+html, body {
+  overflow: hidden; /* Mantém o app fixo na tela */
+  height: 100%;
+}
+
+/* Container alvo do scroll suave */
+#smooth-container {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: auto; /* Lenis controla via JS, desativa CSS nativo */
+}
+
+/* Scrollbar estilizada e discreta */
+#smooth-container::-webkit-scrollbar {
+  width: 8px;
+}
+#smooth-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+#smooth-container::-webkit-scrollbar-thumb {
+  background: hsl(26 21% 75%);
+  border-radius: 4px;
+  border: 2px solid #F5F3EF;
+}
+#smooth-container::-webkit-scrollbar-thumb:hover {
+  background: hsl(26 49% 54%);
+}
+
+/* Previne conflito com tooltips/overlays absolutos */
+[data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
