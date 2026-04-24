@@ -1,16 +1,17 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
-import { Search, Bell, Settings as SettingsIcon, ChevronLeft } from "lucide-react";
+import { Search, Bell, Settings as SettingsIcon, ChevronLeft, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { createClient } from "@/lib/supabase/client";
 
 interface TopbarProps {
   onOpenSettings: () => void;
   onOpenProfile: () => void;
 }
 
-// Mapeamento de rotas para nomes exibidos na Topbar
 const pageTitleMap: Record<string, string> = {
   "/app/dashboard": "Dashboard",
   "/app/patients": "Pacientes",
@@ -24,41 +25,35 @@ const pageTitleMap: Record<string, string> = {
 
 export function Topbar({ onOpenSettings, onOpenProfile }: TopbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
   
-  // Pega o nome da página baseado na rota atual, com fallback para "Overview"
   const currentPage = pageTitleMap[pathname] || "Overview";
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
 
   return (
     <header className="h-20 px-6 xl:px-8 flex items-center justify-between bg-transparent">
-      {/* Lado Esquerdo - Título Dinâmico da Seção */}
       <div className="flex items-center gap-4">
         <h1 className="text-xl font-semibold text-[#2B2420] hidden md:block tracking-tight">
           {currentPage}
         </h1>
       </div>
 
-      {/* Lado Direito - Ícones e Perfil */}
       <div className="flex items-center gap-2">
-        {/* Ícone de Busca */}
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="h-11 w-11 bg-white/60 hover:bg-white/90 text-[#6B6359] hover:text-[#2B2420] icon-hover rounded-xl backdrop-blur-sm border border-white/20"
-        >
+        <Button variant="ghost" size="icon" className="h-11 w-11 bg-white/60 hover:bg-white/90 text-[#6B6359] hover:text-[#2B2420] icon-hover rounded-xl backdrop-blur-sm border border-white/20">
           <Search className="h-5 w-5" />
         </Button>
 
-        {/* Ícone de Notificações */}
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="h-11 w-11 bg-white/60 hover:bg-white/90 text-[#6B6359] hover:text-[#2B2420] icon-hover rounded-xl backdrop-blur-sm border border-white/20 relative"
-        >
+        <Button variant="ghost" size="icon" className="h-11 w-11 bg-white/60 hover:bg-white/90 text-[#6B6359] hover:text-[#2B2420] icon-hover rounded-xl backdrop-blur-sm border border-white/20 relative">
           <Bell className="h-5 w-5" />
           <span className="absolute top-2 right-2 h-2 w-2 bg-[#C77F49] rounded-full ring-2 ring-white" />
         </Button>
 
-        {/* Ícone de Configurações */}
         <Button 
           variant="ghost" 
           size="icon"
@@ -68,10 +63,19 @@ export function Topbar({ onOpenSettings, onOpenProfile }: TopbarProps) {
           <SettingsIcon className="h-5 w-5" />
         </Button>
 
-        {/* Divider */}
         <div className="h-6 w-px bg-[#DAD8D4] mx-1" />
 
-        {/* User Profile Area */}
+        {/* Botão de Logout */}
+        <Button
+          onClick={handleLogout}
+          variant="ghost"
+          size="icon"
+          className="h-11 w-11 bg-white/60 hover:bg-red-50 hover:text-red-600 text-[#6B6359] icon-hover rounded-xl backdrop-blur-sm border border-white/20 transition-all"
+          title="Sair da conta"
+        >
+          <LogOut className="h-5 w-5" />
+        </Button>
+
         <button 
           onClick={onOpenProfile}
           className="flex items-center gap-3 pl-2 pr-3 py-2 rounded-xl bg-white/60 hover:bg-white/90 transition-all duration-200 icon-hover backdrop-blur-sm border border-white/20"
